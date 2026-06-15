@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoGuard | Spam Detection</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #161616;
+            --primary: #ffffff;
+            --secondary: #888888;
+            --accent: #2ecc71;
+            --error: #e74c3c;
+            --border: #2a2a2a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        textarea {
+            width: 100%;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--primary);
+            padding: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: none;
+            height: 100px;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #444;
+        }
+
+        .custom-file-upload {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: #000;
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .custom-file-upload:hover {
+            border-color: #444;
+            color: var(--primary);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: var(--bg);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #result {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 8px;
+            display: none;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .result-spam {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            color: var(--error);
+        }
+
+        .result-ham {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            color: var(--accent);
+        }
+
+        .loader {
+            display: none;
+            margin: 20px auto;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .filename {
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-top: 8px;
+            display: none;
+            text-align: center;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+
+        footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--primary);
+        }
+        </style>
+        </head>
+        <body>
+
+        <div class="container">
+        <header>
+        <h1>CryptoGuard</h1>
+        <p>AI-powered crypto spam detection.</p>
+        </header>
+
+        <div class="card">
+        <div class="input-group">
+            <label for="messageInput">Text Message</label>
+            <textarea id="messageInput" placeholder="Paste tweet or message content here..."></textarea>
+        </div>
+
+        <div class="input-group" style="margin-bottom: 32px;">
+            <label>Audio Input (Optional)</label>
+            <label class="custom-file-upload">
+                <input type="file" id="audioInput" accept="audio/*">
+                <span id="uploadText">Upload audio for analysis</span>
+            </label>
+            <div id="filenameDisplay" class="filename"></div>
+        </div>
+
+        <button id="submitBtn" class="btn" onclick="checkSpam()">Analyze</button>
+        <div id="loader" class="loader"></div>
+        <div id="result"></div>
+        </div>
+
+        <footer>
+        <a href="https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME" target="_blank">API Documentation</a>
+        <span>&bull;</span>
+        <a href="https://github.com/YOUR_USERNAME/YOUR_REPO" target="_blank">Source Code</a>
+        </footer>
+        </div>
+
+<script>
+    const audioInput = document.getElementById('audioInput');
+    const filenameDisplay = document.getElementById('filenameDisplay');
+    const uploadText = document.getElementById('uploadText');
+    const resultDiv = document.getElementById('result');
+    const loader = document.getElementById('loader');
+    const submitBtn = document.getElementById('submitBtn');
+
+    audioInput.onchange = () => {
+        if (audioInput.files.length > 0) {
+            filenameDisplay.innerText = `Selected: ${audioInput.files[0].name}`;
+            filenameDisplay.style.display = 'block';
+            uploadText.innerText = 'Change audio file';
+        } else {
+            filenameDisplay.style.display = 'none';
+            uploadText.innerText = 'Upload audio for analysis';
+        }
+    };
+
+    async function checkSpam() {
+        const message = document.getElementById('messageInput').value;
+        const audioFile = audioInput.files[0];
+
+        // --- CONFIGURATION ---
+        // Change this to your Hugging Face Space URL when deploying
+        // Example: 'https://your-username-your-space.hf.space/predict'
+        const API_ENDPOINT = '/predict'; 
+        // ---------------------
+
+        if (!message && !audioFile) {
+            alert("Please provide either text or an audio file.");
+            return;
+        }
+
+        resultDiv.style.display = 'none';
+        loader.style.display = 'block';
+        submitBtn.disabled = true;
+
+        const formData = new FormData();
+        if (message) formData.append('tweet', message);
+        if (audioFile) formData.append('audio', audioFile);
+
+        try {
+            const response = await fetch(API_ENDPOINT, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                resultDiv.style.display = 'block';
+                const confidence = (data.confidence * 100).toFixed(1);
+                const type = data.prediction.toUpperCase();
+                
+                let html = `<div style="font-size: 1.1rem; margin-bottom: 4px;">${type} Detected</div>`;
+                html += `<div style="font-size: 0.85rem; opacity: 0.8;">Confidence: ${confidence}%</div>`;
+                
+                if (data.audio_transcription) {
+                    html += `<div style="font-size: 0.8rem; margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; text-align: left; font-style: italic; color: var(--secondary);">Transcription: "${data.audio_transcription}"</div>`;
+                }
+
+                resultDiv.innerHTML = html;
+                resultDiv.className = data.prediction === 'spam' ? 'result-spam' : 'result-ham';
+            } else {
+                alert("Error: " + data.error);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Could not connect to the backend. Is the server running?");
+        } finally {
+            loader.style.display = 'none';
+            submitBtn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
