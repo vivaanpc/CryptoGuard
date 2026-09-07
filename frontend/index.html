@@ -236,9 +236,9 @@
         </div>
 
         <footer>
-        <a href="https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME" target="_blank">API Documentation</a>
+        <a href="https://cryptoguard-api.onrender.com/docs" target="_blank">API Documentation</a>
         <span>&bull;</span>
-        <a href="https://github.com/YOUR_USERNAME/YOUR_REPO" target="_blank">Source Code</a>
+        <a href="https://github.com/vivaanpc/CryptoGuard" target="_blank">Source Code</a>
         </footer>
         </div>
 
@@ -265,11 +265,8 @@
         const message = document.getElementById('messageInput').value;
         const audioFile = audioInput.files[0];
 
-        // --- CONFIGURATION ---
-        // Change this to your Hugging Face Space URL when deploying
-        // Example: 'https://your-username-your-space.hf.space/predict'
-        const API_ENDPOINT = '/predict'; 
-        // ---------------------
+        // Backend is deployed on Render
+        const API_ENDPOINT = 'https://cryptoguard-api.onrender.com/predict';
 
         if (!message && !audioFile) {
             alert("Please provide either text or an audio file.");

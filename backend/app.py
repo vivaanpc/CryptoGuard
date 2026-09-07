@@ -5,13 +5,8 @@ from pathlib import Path
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
 
 from predict import predict_spam
-
-# Static files
-SCRIPT_DIR = Path(__file__).parent
-FRONTEND_DIR = SCRIPT_DIR.parent / "frontend"
 
 app = FastAPI(
     title="CryptoGuard Spam Classifier API",
@@ -31,10 +26,12 @@ app.add_middleware(
 
 @app.get("/", include_in_schema=False)
 async def serve_index():
-    index_path = FRONTEND_DIR / "index.html"
-    if index_path.exists():
-        return FileResponse(str(index_path))
-    return {"message": "CryptoGuard API is operational. Index file not found."}
+    return {
+        "message": "CryptoGuard API is operational.",
+        "docs": "/docs",
+        "health": "/health",
+    }
+
 
 
 @app.get("/health")
