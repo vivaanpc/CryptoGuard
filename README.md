@@ -50,7 +50,7 @@ crypto-guard/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/vivaanpc/crypto-guard.git
+git clone https://github.com/vivaanpc/cryptoguard.git
 cd crypto-guard
 ```
 
